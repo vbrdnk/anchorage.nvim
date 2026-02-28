@@ -1,0 +1,59 @@
+-- lua/anchorage/config.lua
+local M = {}
+
+M.defaults = {
+	data_path = vim.fn.stdpath("data") .. "/anchorage",
+
+	key = function()
+		return vim.loop.cwd()
+	end,
+
+	sync_on_close = true,
+
+	default = {
+		select_with_nil = false,
+
+		create_list_item = function(_, item)
+			if item then
+				return { value = item, context = {} }
+			end
+			local bufname = vim.api.nvim_buf_get_name(0)
+			if bufname == "" then
+				return nil
+			end
+			return {
+				value = vim.fn.fnamemodify(bufname, ":~:."),
+				context = { row = vim.fn.line("."), col = vim.fn.col(".") },
+			}
+		end,
+
+		display = function(item)
+			return item.value
+		end,
+
+		select = function(item, _, opts)
+			if not item then
+				return
+			end
+			opts = opts or {}
+			local cmd = opts.vsplit and "vsplit" or opts.split and "split" or opts.tabedit and "tabedit" or "edit"
+			vim.cmd(cmd .. " " .. vim.fn.fnameescape(item.value))
+			if item.context and item.context.row then
+				pcall(vim.api.nvim_win_set_cursor, 0, { item.context.row, item.context.col or 0 })
+			end
+		end,
+
+		equals = function(a, b)
+			return a.value == b.value
+		end,
+
+		encode = vim.json.encode,
+		decode = vim.json.decode,
+	},
+}
+
+function M.merge(user)
+	return vim.tbl_deep_extend("force", M.defaults, user or {})
+end
+
+return M
