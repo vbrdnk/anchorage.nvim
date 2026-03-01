@@ -30,6 +30,8 @@ return {
 
 That's it. Default keymaps are registered automatically.
 
+Run `:checkhealth anchorage` to verify the installation.
+
 ## 🚀 Usage
 
 ### Picker keymaps
@@ -90,7 +92,7 @@ return {
 
     -- Storage key per project. Override for git worktree support:
     -- key = function()
-    --   return vim.fn.systemlist("git rev-parse --show-toplevel")[1] or vim.loop.cwd()
+    --   return vim.fn.systemlist("git rev-parse --show-toplevel")[1] or vim.uv.cwd()
     -- end,
 
     -- Persist lists when the picker closes
@@ -184,12 +186,15 @@ opts = {
 
 Override these in your colorscheme to customise the picker appearance:
 
-| Group | Default | Used for |
+| Group | Links to | Used for |
 |---|---|---|
-| `AnchorageIcon` | `#e5c07b` bold | Anchor icon |
-| `AnchorageBadge` | `#61afef` bg, `#282c34` fg, bold | Slot number badge |
-| `AnchorageName` | `#abb2bf` bold | Filename |
-| `AnchorageDir` | `#5c6370` italic | Directory path |
+| `AnchorageIcon` | `DiagnosticWarn` | Anchor icon |
+| `AnchorageBadge` | `CurSearch` | Slot number badge |
+| `AnchorageName` | `Normal` | Filename |
+| `AnchorageDir` | `Comment` | Directory path |
+
+All groups use `default = true`, so your colorscheme can override them without any extra config.
+To override manually:
 
 ```lua
 -- Example overrides

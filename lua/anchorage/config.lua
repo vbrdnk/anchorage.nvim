@@ -16,14 +16,19 @@ M.defaults = {
 	},
 
 	key = function()
-		return vim.loop.cwd()
+		return (vim.uv or vim.loop).cwd()
 	end,
 
 	sync_on_close = true,
 
+	-- Prefix for which-key group label. nil = auto-derive from keymaps.add.
+	keymap_prefix = nil,
+
 	picker = {},
 
 	default = {
+		-- When true, select() is called even when the slot is empty.
+		-- Useful for custom select handlers that want to handle nil items.
 		select_with_nil = false,
 
 		create_list_item = function(_, item)
@@ -32,6 +37,7 @@ M.defaults = {
 			end
 			-- When invoked from snacks.explorer, grab the focused node's path
 			if vim.bo.filetype == "snacks_picker_list" then
+				if not rawget(_G, "Snacks") then return nil end
 				local pickers = Snacks.picker.get({ source = "explorer" })
 				local explorer = pickers[#pickers]
 				if explorer then

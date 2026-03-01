@@ -5,10 +5,7 @@
 local M = {}
 
 ---@param list AnchorageList
----@param opts? table
-function M.open(list, opts)
-	opts = opts or {}
-
+function M.open(list)
 	local snacks = require("snacks")
 
 	-- ── helpers ───────────────────────────────────────────────────────────────
@@ -104,6 +101,7 @@ function M.open(list, opts)
 
 	-- Defaults — all overridable via config.picker
 	local defaults = {
+		_anchorage_list = list.name,
 		title = " Anchorage — " .. list.name,
 		focus = "list",
 		preview = "file",
@@ -135,6 +133,7 @@ function M.open(list, opts)
 					["<C-k>"] = "move_up",
 					["<C-j>"] = "move_down",
 					["dd"] = "delete",
+					["q"] = "close",
 				},
 			},
 		},
@@ -157,10 +156,10 @@ end
 -- ── highlight groups (call once from setup) ───────────────────────────────
 
 function M.setup_highlights()
-	vim.api.nvim_set_hl(0, "AnchorageIcon", { fg = "#e5c07b", bold = true })
-	vim.api.nvim_set_hl(0, "AnchorageBadge", { fg = "#282c34", bg = "#61afef", bold = true })
-	vim.api.nvim_set_hl(0, "AnchorageName", { fg = "#abb2bf", bold = true })
-	vim.api.nvim_set_hl(0, "AnchorageDir", { fg = "#5c6370", italic = true })
+	vim.api.nvim_set_hl(0, "AnchorageIcon",  { link = "DiagnosticWarn", default = true })
+	vim.api.nvim_set_hl(0, "AnchorageBadge", { link = "CurSearch",      default = true })
+	vim.api.nvim_set_hl(0, "AnchorageName",  { link = "Normal",         default = true })
+	vim.api.nvim_set_hl(0, "AnchorageDir",   { link = "Comment",        default = true })
 end
 
 return M

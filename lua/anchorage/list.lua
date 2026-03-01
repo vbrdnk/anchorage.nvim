@@ -27,13 +27,9 @@ end
 
 function M:_load()
 	local path = self:_path()
-	local f = io.open(path, "r")
-	if not f then
-		return
-	end
-	local raw = f:read("*a")
-	f:close()
-	local ok, data = pcall(vim.json.decode, raw)
+	if vim.fn.filereadable(path) == 0 then return end
+	local lines = vim.fn.readfile(path)
+	local ok, data = pcall(self.config.default.decode, table.concat(lines, "\n"))
 	if ok and type(data) == "table" then
 		self._items = data
 	end
@@ -41,12 +37,7 @@ end
 
 function M:save()
 	local path = self:_path()
-	local f = io.open(path, "w")
-	if not f then
-		return
-	end
-	f:write(vim.json.encode(self._items))
-	f:close()
+	vim.fn.writefile({ self.config.default.encode(self._items) }, path)
 end
 
 -- ── item operations ─────────────────────────────────────────────────────────

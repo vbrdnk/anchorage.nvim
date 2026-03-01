@@ -51,15 +51,20 @@ local function apply_keymaps(cfg)
 
 	-- Register which-key group label if which-key is available
 	local ok, wk = pcall(require, "which-key")
-	if ok and km.add and km.add ~= "" then
-		local prefix = km.add:sub(1, -2) -- strip trailing key character, e.g. "<leader>ha" -> "<leader>h"
-		wk.add({ { prefix, group = "anchorage", icon = "⚓" } })
+	if ok then
+		local prefix = cfg.keymap_prefix
+			or (km.add and km.add ~= "" and km.add:match("^(.+)%a$"))
+			or nil
+		if prefix then
+			wk.add({ { prefix, group = "anchorage", icon = "⚓" } })
+		end
 	end
 end
 
 ---@param user_config? table
 function M.setup(user_config)
 	M._config = Config.merge(user_config)
+	M._lists = {}
 	Picker.setup_highlights()
 
 	-- Re-apply highlights on colorscheme change
@@ -97,9 +102,16 @@ end
 -- ── picker toggle (mirrors harpoon.ui:toggle_quick_menu()) ───────────────
 
 ---@param list AnchorageList
----@param opts? table
-function M.toggle_picker(list, opts)
-	Picker.open(list, opts)
+function M.toggle_picker(list)
+	if rawget(_G, "Snacks") then
+		for _, p in ipairs(Snacks.picker.get()) do
+			if p.opts._anchorage_list == list.name then
+				p:close()
+				return
+			end
+		end
+	end
+	Picker.open(list)
 end
 
 return M
