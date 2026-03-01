@@ -12,11 +12,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 The plugin is structured as four modules under `lua/anchorage/`:
 
-| Module | Role |
-|---|---|
-| `init.lua` | Public API. Entry point. Holds global `_config` and `_lists` state. Registers autocmds for highlight refresh on colorscheme change and persistence on `VimLeavePre`. |
-| `config.lua` | Default config table + `merge()`. All user-facing options live here. The `default` subtable holds per-list hooks: `create_list_item`, `display`, `select`, `equals`, `encode`, `decode`. |
-| `list.lua` | `AnchorageList` class (metatables). Manages an ordered item array with JSON persistence per `(cwd_key, list_name)`. Key operations: `add`, `prepend`, `remove`, `remove_at`, `select`, `next`, `prev`, `save`. |
+| Module       | Role                                                                                                                                                                                                                 |
+| ------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `init.lua`   | Public API. Entry point. Holds global `_config` and `_lists` state. Registers autocmds for highlight refresh on colorscheme change and persistence on `VimLeavePre`.                                                 |
+| `config.lua` | Default config table + `merge()`. All user-facing options live here. The `default` subtable holds per-list hooks: `create_list_item`, `display`, `select`, `equals`, `encode`, `decode`.                             |
+| `list.lua`   | `AnchorageList` class (metatables). Manages an ordered item array with JSON persistence per `(cwd_key, list_name)`. Key operations: `add`, `prepend`, `remove`, `remove_at`, `select`, `next`, `prev`, `save`.       |
 | `picker.lua` | Thin wrapper around `snacks.picker`. Builds formatted item spans (icon, badge, name, dir), registers actions (confirm, open_vsplit, open_split, open_tab, delete, move_up, move_down), and sets up highlight groups. |
 
 ### Data flow
@@ -31,9 +31,11 @@ User keymap
 ### Persistence
 
 Lists are saved as JSON files at:
+
 ```
 {data_path}/{cwd_key}__{list_name}.json
 ```
+
 where `cwd_key` is the sanitized CWD (`vim.loop.cwd()`), and `data_path` defaults to `vim.fn.stdpath("data") .. "/anchorage"`.
 
 ## Conventions
