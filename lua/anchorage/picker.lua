@@ -70,8 +70,15 @@ function M.open(list, opts)
 		if not sel then
 			return
 		end
+		local item = sel._item
+		local main = picker.main
 		picker:close()
-		list.config.default.select(sel._item, list, open_opts)
+		vim.schedule(function()
+			if main and vim.api.nvim_win_is_valid(main) then
+				vim.api.nvim_set_current_win(main)
+			end
+			list.config.default.select(item, list, open_opts)
+		end)
 	end
 
 	-- ── picker config ─────────────────────────────────────────────────────────
@@ -120,14 +127,14 @@ function M.open(list, opts)
 		end,
 
 		win = {
-			input = {
+			list = {
 				keys = {
-					["<C-v>"] = { "open_vsplit", mode = { "i", "n" } },
-					["<C-x>"] = { "open_split", mode = { "i", "n" } },
-					["<C-t>"] = { "open_tab", mode = { "i", "n" } },
-					["<C-k>"] = { "move_up", mode = { "i", "n" } },
-					["<C-j>"] = { "move_down", mode = { "i", "n" } },
-					["dd"] = { "delete", mode = "n" },
+					["<C-v>"] = "open_vsplit",
+					["<C-x>"] = "open_split",
+					["<C-t>"] = "open_tab",
+					["<C-k>"] = "move_up",
+					["<C-j>"] = "move_down",
+					["dd"] = "delete",
 				},
 			},
 		},
