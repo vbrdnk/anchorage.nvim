@@ -27,7 +27,9 @@ end
 
 function M:_load()
 	local path = self:_path()
-	if vim.fn.filereadable(path) == 0 then return end
+	if vim.fn.filereadable(path) == 0 then
+		return
+	end
 	local lines = vim.fn.readfile(path)
 	local ok, data = pcall(self.config.default.decode, table.concat(lines, "\n"))
 	if ok and type(data) == "table" then
@@ -61,12 +63,14 @@ function M:add(item)
 	-- avoid duplicates
 	for _, existing in ipairs(self._items) do
 		if cfg.equals(existing, new_item) then
+			vim.notify("⚓ " .. new_item.value .. " already in the list", vim.log.levels.WARN, { title = "Anchorage" })
 			return
 		end
 	end
 
 	table.insert(self._items, new_item)
 	self:save()
+	vim.notify("⚓ " .. new_item.value .. " added to the list", vim.log.levels.INFO, { title = "Anchorage" })
 end
 
 function M:prepend(item)
