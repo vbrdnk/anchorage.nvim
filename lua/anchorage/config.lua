@@ -21,6 +21,8 @@ M.defaults = {
 
 	sync_on_close = true,
 
+	picker = {},
+
 	default = {
 		select_with_nil = false,
 

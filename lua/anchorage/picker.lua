@@ -76,16 +76,32 @@ function M.open(list, opts)
 
 	-- ── picker config ─────────────────────────────────────────────────────────
 
-	snacks.picker({
+	-- Internal actions — never overridable
+	local actions = {
+		confirm = function(picker, _item)
+			open_with(picker, {})
+		end,
+		open_vsplit = function(picker, _)
+			open_with(picker, { vsplit = true })
+		end,
+		open_split = function(picker, _)
+			open_with(picker, { split = true })
+		end,
+		open_tab = function(picker, _)
+			open_with(picker, { tabedit = true })
+		end,
+		delete = delete_selected,
+		move_up = move_up,
+		move_down = move_down,
+	}
+
+	-- Defaults — all overridable via config.picker
+	local defaults = {
 		title = " Anchorage — " .. list.name,
 		focus = "list",
+		preview = "file",
 
-		-- static item source (we refresh manually after mutations)
-		items = make_items(),
-
-		-- columns shown in the list
 		format = function(item, _)
-			-- icon + index badge + filename + optional row hint
 			local icon = "󰀱 "
 			local badge = string.format(" %d ", item.idx)
 			local name = vim.fn.fnamemodify(item.value, ":t")
@@ -95,8 +111,6 @@ function M.open(list, opts)
 			else
 				dir = " " .. dir
 			end
-
-			-- Use snacks text spans for colour
 			return {
 				{ icon, "AnchorageIcon" },
 				{ badge, "AnchorageBadge" },
@@ -104,29 +118,6 @@ function M.open(list, opts)
 				{ dir, "AnchorageDir" },
 			}
 		end,
-
-		-- Live preview using snacks built-in file preview
-		preview = "file",
-
-		-- Key mappings inside the picker
-		actions = {
-			-- default confirm → open file
-			confirm = function(picker, _item)
-				open_with(picker, {})
-			end,
-			open_vsplit = function(picker, _)
-				open_with(picker, { vsplit = true })
-			end,
-			open_split = function(picker, _)
-				open_with(picker, { split = true })
-			end,
-			open_tab = function(picker, _)
-				open_with(picker, { tabedit = true })
-			end,
-			delete = delete_selected,
-			move_up = move_up,
-			move_down = move_down,
-		},
 
 		win = {
 			input = {
@@ -140,13 +131,20 @@ function M.open(list, opts)
 				},
 			},
 		},
+	}
 
+	-- Merge: user overrides defaults, but internal fields always win
+	local picker_opts = vim.tbl_deep_extend("force", defaults, list.config.picker or {}, {
+		items = make_items(),
+		actions = actions,
 		on_close = function()
 			if list.config.sync_on_close then
 				list:save()
 			end
 		end,
 	})
+
+	snacks.picker(picker_opts)
 end
 
 -- ── highlight groups (call once from setup) ───────────────────────────────

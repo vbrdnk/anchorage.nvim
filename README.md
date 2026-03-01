@@ -72,6 +72,36 @@ return {
 }
 ```
 
+### Picker customisation
+
+Pass a `picker` table to override any [snacks.picker](https://github.com/folke/snacks.nvim) option. Anchorage merges it on top of its defaults, so you only need to specify what you want to change.
+
+```lua
+opts = {
+  picker = {
+    -- Change the title
+    title = "My Files",
+
+    -- Use a different layout preset
+    layout = { preset = "telescope" },
+
+    -- Disable the file preview
+    preview = false,
+
+    -- Add or remap keys (merged with built-in keys)
+    win = {
+      input = {
+        keys = {
+          ["<C-d>"] = { "delete", mode = { "i", "n" } },
+        },
+      },
+    },
+  },
+}
+```
+
+> **Note**: `items`, `actions`, and `on_close` are always managed internally and cannot be overridden.
+
 ### Other options
 
 ```lua
