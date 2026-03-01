@@ -4,6 +4,17 @@ local M = {}
 M.defaults = {
 	data_path = vim.fn.stdpath("data") .. "/anchorage",
 
+	keymaps = {
+		add = "<leader>ha",
+		toggle = "<leader>he",
+		select_1 = "<leader>h1",
+		select_2 = "<leader>h2",
+		select_3 = "<leader>h3",
+		select_4 = "<leader>h4",
+		prev = "<leader>hp",
+		next = "<leader>hn",
+	},
+
 	key = function()
 		return vim.loop.cwd()
 	end,
@@ -53,7 +64,12 @@ M.defaults = {
 }
 
 function M.merge(user)
-	return vim.tbl_deep_extend("force", M.defaults, user or {})
+	user = user or {}
+	local merged = vim.tbl_deep_extend("force", M.defaults, user)
+	if user.keymaps == false then
+		merged.keymaps = false
+	end
+	return merged
 end
 
 return M

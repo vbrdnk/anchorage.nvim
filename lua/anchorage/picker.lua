@@ -20,6 +20,7 @@ function M.open(list, opts)
 				idx = i,
 				text = string.format("[%d] %s", i, list.config.default.display(item)),
 				value = item.value,
+				file = item.value,
 				_item = item,
 			})
 		end
@@ -27,7 +28,8 @@ function M.open(list, opts)
 	end
 
 	local function refresh(picker)
-		picker:find({ items = make_items() })
+		picker.opts.items = make_items()
+		picker:refresh()
 	end
 
 	-- ── action helpers ────────────────────────────────────────────────────────
@@ -76,6 +78,7 @@ function M.open(list, opts)
 
 	snacks.picker({
 		title = " Anchorage — " .. list.name,
+		focus = "list",
 
 		-- static item source (we refresh manually after mutations)
 		items = make_items(),
@@ -126,18 +129,14 @@ function M.open(list, opts)
 		},
 
 		win = {
-			-- Main list window
-			list = {
+			input = {
 				keys = {
-					["<CR>"] = "confirm",
-					["<C-v>"] = "open_vsplit",
-					["<C-x>"] = "open_split",
-					["<C-t>"] = "open_tab",
-					["dd"] = "delete",
-					["<C-k>"] = "move_up",
-					["<C-j>"] = "move_down",
-					["q"] = "close",
-					["<Esc>"] = "close",
+					["<C-v>"] = { "open_vsplit", mode = { "i", "n" } },
+					["<C-x>"] = { "open_split", mode = { "i", "n" } },
+					["<C-t>"] = { "open_tab", mode = { "i", "n" } },
+					["<C-k>"] = { "move_up", mode = { "i", "n" } },
+					["<C-j>"] = { "move_down", mode = { "i", "n" } },
+					["dd"] = { "delete", mode = "n" },
 				},
 			},
 		},

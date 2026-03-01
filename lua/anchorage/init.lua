@@ -13,6 +13,27 @@ local M = {
 
 -- ── setup (REQUIRED, like harpoon:setup()) ────────────────────────────────
 
+local function apply_keymaps(cfg)
+	if cfg.keymaps == false then
+		return
+	end
+	local km = cfg.keymaps
+	local function map(lhs, fn)
+		if lhs and lhs ~= "" then
+			vim.keymap.set("n", lhs, fn, { desc = "Anchorage: " .. lhs, silent = true })
+		end
+	end
+
+	map(km.add, function() M.list():add() end)
+	map(km.toggle, function() M.toggle_picker(M.list()) end)
+	map(km.select_1, function() M.list():select(1) end)
+	map(km.select_2, function() M.list():select(2) end)
+	map(km.select_3, function() M.list():select(3) end)
+	map(km.select_4, function() M.list():select(4) end)
+	map(km.prev, function() M.list():prev() end)
+	map(km.next, function() M.list():next() end)
+end
+
 ---@param user_config? table
 function M.setup(user_config)
 	M._config = Config.merge(user_config)
@@ -33,6 +54,8 @@ function M.setup(user_config)
 			end
 		end,
 	})
+
+	apply_keymaps(M._config)
 end
 
 -- ── list access (mirrors harpoon:list()) ──────────────────────────────────
