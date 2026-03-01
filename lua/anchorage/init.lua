@@ -18,20 +18,43 @@ local function apply_keymaps(cfg)
 		return
 	end
 	local km = cfg.keymaps
-	local function map(lhs, fn)
+	local function map(lhs, fn, desc)
 		if lhs and lhs ~= "" then
-			vim.keymap.set("n", lhs, fn, { desc = "Anchorage: " .. lhs, silent = true })
+			vim.keymap.set("n", lhs, fn, { desc = desc, silent = true })
 		end
 	end
 
-	map(km.add, function() M.list():add() end)
-	map(km.toggle, function() M.toggle_picker(M.list()) end)
-	map(km.select_1, function() M.list():select(1) end)
-	map(km.select_2, function() M.list():select(2) end)
-	map(km.select_3, function() M.list():select(3) end)
-	map(km.select_4, function() M.list():select(4) end)
-	map(km.prev, function() M.list():prev() end)
-	map(km.next, function() M.list():next() end)
+	map(km.add, function()
+		M.list():add()
+	end, "Anchorage: add file")
+	map(km.toggle, function()
+		M.toggle_picker(M.list())
+	end, "Anchorage: open picker")
+	map(km.select_1, function()
+		M.list():select(1)
+	end, "Anchorage: jump to slot 1")
+	map(km.select_2, function()
+		M.list():select(2)
+	end, "Anchorage: jump to slot 2")
+	map(km.select_3, function()
+		M.list():select(3)
+	end, "Anchorage: jump to slot 3")
+	map(km.select_4, function()
+		M.list():select(4)
+	end, "Anchorage: jump to slot 4")
+	map(km.prev, function()
+		M.list():prev()
+	end, "Anchorage: prev file")
+	map(km.next, function()
+		M.list():next()
+	end, "Anchorage: next file")
+
+	-- Register which-key group label if which-key is available
+	local ok, wk = pcall(require, "which-key")
+	if ok and km.add and km.add ~= "" then
+		local prefix = km.add:sub(1, -2) -- strip trailing key character, e.g. "<leader>ha" -> "<leader>h"
+		wk.add({ { prefix, group = "anchorage", icon = "⚓" } })
+	end
 end
 
 ---@param user_config? table
