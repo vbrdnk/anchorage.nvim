@@ -1,5 +1,5 @@
 -- lua/anchorage/init.lua
--- Public API surface — intentionally mirrors harpoon2 so muscle memory transfers.
+-- Public API surface — inspired by harpoon2's API design.
 
 local Config = require("anchorage.config")
 local List = require("anchorage.list")
@@ -11,7 +11,7 @@ local M = {
 	_lists = {},
 }
 
--- ── setup (REQUIRED, like harpoon:setup()) ────────────────────────────────
+-- ── setup ─────────────────────────────────────────────────────────────────
 
 local function apply_keymaps(cfg)
 	if cfg.keymaps == false then
@@ -84,7 +84,7 @@ function M.setup(user_config)
 	apply_keymaps(M._config)
 end
 
--- ── list access (mirrors harpoon:list()) ──────────────────────────────────
+-- ── list access ───────────────────────────────────────────────────────────
 
 ---@param name? string  defaults to "files"
 ---@return AnchorageList
@@ -97,7 +97,7 @@ function M.list(name)
 	return M._lists[name]
 end
 
--- ── picker toggle (mirrors harpoon.ui:toggle_quick_menu()) ───────────────
+-- ── picker toggle ─────────────────────────────────────────────────────────
 
 ---@param list AnchorageList
 function M.toggle_picker(list)

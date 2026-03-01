@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What This Is
 
-**Anchorage** is a Neovim plugin written in Lua. It provides harpoon2-compatible file bookmarking with a `snacks.picker`-powered UI. The API mirrors harpoon2 so existing muscle memory transfers directly.
+**Anchorage** is a Neovim plugin written in Lua. It provides file bookmarking heavily inspired by harpoon2, with a `snacks.picker`-powered UI.
 
 **Runtime dependency**: [`snacks.nvim`](https://github.com/folke/snacks.nvim) — the picker is built entirely on `snacks.picker`.
 

@@ -1,7 +1,6 @@
 # ⚓ anchorage.nvim
 
-Harpoon2-compatible file bookmarking with a [`snacks.picker`](https://github.com/folke/snacks.nvim) UI.
-The API mirrors harpoon2 so existing muscle memory transfers directly.
+File bookmarking heavily inspired by [harpoon2](https://github.com/ThePrimeagen/harpoon), with a [`snacks.picker`](https://github.com/folke/snacks.nvim) UI.
 
 ## ✨ Features
 
