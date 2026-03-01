@@ -18,12 +18,13 @@ File bookmarking heavily inspired by [harpoon2](https://github.com/ThePrimeagen/
 
 ## 📦 Installation
 
+### Zero-config (recommended)
+
 ```lua
 -- lazy.nvim
 return {
   "vbrdnk/anchorage.nvim",
   dependencies = { "folke/snacks.nvim" },
-  lazy = false,
 }
 ```
 
@@ -31,28 +32,54 @@ That's it. Default keymaps are registered automatically.
 
 Run `:checkhealth anchorage` to verify the installation.
 
+### Custom keymaps spec
+
+If you want to define your own keymaps (e.g. to show them in the lazy.nvim UI):
+
+```lua
+return {
+  "vbrdnk/anchorage.nvim",
+  dependencies = { "folke/snacks.nvim" },
+  opts = { keymaps = false },
+  keys = {
+    { "<leader>ha", function() require("anchorage").list():add() end,                                   desc = "Anchorage: add file" },
+    { "<leader>he", function() require("anchorage").toggle_picker(require("anchorage").list()) end,     desc = "Anchorage: open picker" },
+    { "<leader>h1", function() require("anchorage").list():select(1) end,                               desc = "Anchorage: slot 1" },
+    { "<leader>h2", function() require("anchorage").list():select(2) end,                               desc = "Anchorage: slot 2" },
+    { "<leader>h3", function() require("anchorage").list():select(3) end,                               desc = "Anchorage: slot 3" },
+    { "<leader>h4", function() require("anchorage").list():select(4) end,                               desc = "Anchorage: slot 4" },
+    { "<leader>hp", function() require("anchorage").list():prev() end,                                  desc = "Anchorage: prev file" },
+    { "<leader>hn", function() require("anchorage").list():next() end,                                  desc = "Anchorage: next file" },
+  },
+}
+```
+
+> [!NOTE]
+> `opts = { keymaps = false }` prevents the plugin from registering its own keymaps,
+> since you're defining them in the `keys` table instead.
+
 ## 🚀 Usage
 
 ### Picker keymaps
 
-| Key | Action |
-|---|---|
-| `<CR>` | Open file |
-| `<C-v>` | Open in vertical split |
-| `<C-x>` | Open in horizontal split |
-| `<C-t>` | Open in new tab |
-| `<C-j>` / `<C-k>` | Move item down / up |
-| `dd` | Remove item from list |
+| Key               | Action                   |
+| ----------------- | ------------------------ |
+| `<CR>`            | Open file                |
+| `<C-v>`           | Open in vertical split   |
+| `<C-x>`           | Open in horizontal split |
+| `<C-t>`           | Open in new tab          |
+| `<C-j>` / `<C-k>` | Move item down / up      |
+| `dd`              | Remove item from list    |
 
 ### Default keymaps
 
-| Key | Action |
-|---|---|
-| `<leader>ha` | Add current file (or hovered file in snacks.explorer) |
-| `<leader>he` | Open picker |
-| `<leader>h1` – `<leader>h4` | Jump to slot 1–4 |
-| `<leader>hp` | Previous anchored file |
-| `<leader>hn` | Next anchored file |
+| Key                         | Action                                                |
+| --------------------------- | ----------------------------------------------------- |
+| `<leader>ha`                | Add current file (or hovered file in snacks.explorer) |
+| `<leader>he`                | Open picker                                           |
+| `<leader>h1` – `<leader>h4` | Jump to slot 1–4                                      |
+| `<leader>hp`                | Previous anchored file                                |
+| `<leader>hn`                | Next anchored file                                    |
 
 ### Lua API
 
@@ -83,7 +110,6 @@ anchorage.toggle_picker(anchorage.list("tests"))
 return {
   "vbrdnk/anchorage.nvim",
   dependencies = { "folke/snacks.nvim" },
-  lazy = false,
   opts = {
     -- Directory where list data is persisted
     -- Default: vim.fn.stdpath("data") .. "/anchorage"
@@ -130,24 +156,7 @@ opts = {
 }
 ```
 
-Disable all built-in keymaps and define your own:
-
-```lua
-return {
-  "vbrdnk/anchorage.nvim",
-  dependencies = { "folke/snacks.nvim" },
-  lazy = false,
-  opts = { keymaps = false },
-  keys = {
-    { "<leader>ha", function() require("anchorage").list():add() end,            desc = "Anchorage: add file" },
-    { "<leader>he", function() require("anchorage").toggle_picker(require("anchorage").list()) end, desc = "Anchorage: open picker" },
-    { "<C-h>",      function() require("anchorage").list():select(1) end,        desc = "Anchorage: slot 1" },
-    { "<C-t>",      function() require("anchorage").list():select(2) end,        desc = "Anchorage: slot 2" },
-    { "<C-n>",      function() require("anchorage").list():select(3) end,        desc = "Anchorage: slot 3" },
-    { "<C-s>",      function() require("anchorage").list():select(4) end,        desc = "Anchorage: slot 4" },
-  },
-}
-```
+Disable all built-in keymaps and define your own (see the [Custom keymaps spec](#custom-keymaps-spec) above for a full example):
 
 ### Picker customisation
 
@@ -185,12 +194,12 @@ opts = {
 
 Override these in your colorscheme to customise the picker appearance:
 
-| Group | Links to | Used for |
-|---|---|---|
-| `AnchorageIcon` | `DiagnosticWarn` | Anchor icon |
-| `AnchorageBadge` | `CurSearch` | Slot number badge |
-| `AnchorageName` | `Normal` | Filename |
-| `AnchorageDir` | `Comment` | Directory path |
+| Group            | Links to         | Used for          |
+| ---------------- | ---------------- | ----------------- |
+| `AnchorageIcon`  | `DiagnosticWarn` | Anchor icon       |
+| `AnchorageBadge` | `CurSearch`      | Slot number badge |
+| `AnchorageName`  | `Normal`         | Filename          |
+| `AnchorageDir`   | `Comment`        | Directory path    |
 
 All groups use `default = true`, so your colorscheme can override them without any extra config.
 To override manually:
