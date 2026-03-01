@@ -26,35 +26,33 @@ local function apply_keymaps(cfg)
 
 	map(km.add, function()
 		M.list():add()
-	end, "Anchorage: add file")
+	end, "Add file")
 	map(km.toggle, function()
 		M.toggle_picker(M.list())
-	end, "Anchorage: open picker")
+	end, "Open picker")
 	map(km.select_1, function()
 		M.list():select(1)
-	end, "Anchorage: jump to slot 1")
+	end, "Jump to slot 1")
 	map(km.select_2, function()
 		M.list():select(2)
-	end, "Anchorage: jump to slot 2")
+	end, "Jump to slot 2")
 	map(km.select_3, function()
 		M.list():select(3)
-	end, "Anchorage: jump to slot 3")
+	end, "Jump to slot 3")
 	map(km.select_4, function()
 		M.list():select(4)
-	end, "Anchorage: jump to slot 4")
+	end, "Jump to slot 4")
 	map(km.prev, function()
 		M.list():prev()
-	end, "Anchorage: prev file")
+	end, "Prev file")
 	map(km.next, function()
 		M.list():next()
-	end, "Anchorage: next file")
+	end, "Next file")
 
 	-- Register which-key group label if which-key is available
 	local ok, wk = pcall(require, "which-key")
 	if ok then
-		local prefix = cfg.keymap_prefix
-			or (km.add and km.add ~= "" and km.add:match("^(.+)%a$"))
-			or nil
+		local prefix = cfg.keymap_prefix or (km.add and km.add ~= "" and km.add:match("^(.+)%a$")) or nil
 		if prefix then
 			wk.add({ { prefix, group = "anchorage", icon = "⚓" } })
 		end
