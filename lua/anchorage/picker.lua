@@ -109,7 +109,7 @@ function M.open(list)
 		format = function(item, _)
 			local icon = "󰀱 "
 			local badge = string.format(" %d ", item.idx)
-			local name = vim.fn.fnamemodify(item.value, ":t")
+			local name = " " .. vim.fn.fnamemodify(item.value, ":t")
 			local dir = vim.fn.fnamemodify(item.value, ":h")
 			if dir == "." then
 				dir = ""
