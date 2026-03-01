@@ -28,6 +28,21 @@ M.defaults = {
 			if item then
 				return { value = item, context = {} }
 			end
+			-- When invoked from snacks.explorer, grab the focused node's path
+			if vim.bo.filetype == "snacks_picker_list" then
+				local pickers = Snacks.picker.get({ source = "explorer" })
+				local explorer = pickers[#pickers]
+				if explorer then
+					local node = explorer:current()
+					if node and node.file and vim.fn.isdirectory(node.file) == 0 then
+						return {
+							value = vim.fn.fnamemodify(node.file, ":~:."),
+							context = {},
+						}
+					end
+				end
+				return nil
+			end
 			local bufname = vim.api.nvim_buf_get_name(0)
 			if bufname == "" then
 				return nil
