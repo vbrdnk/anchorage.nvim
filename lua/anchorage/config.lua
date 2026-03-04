@@ -2,128 +2,134 @@
 local M = {}
 
 M.defaults = {
-	data_path = vim.fn.stdpath("data") .. "/anchorage",
+  data_path = vim.fn.stdpath("data") .. "/anchorage",
 
-	keymaps = {
-		add = "<leader>ha",
-		toggle = "<leader>he",
-		global_add = "<leader>hga",
-		global_toggle = "<leader>hge",
-		global_select_1 = "<leader>hg1",
-		global_select_2 = "<leader>hg2",
-		global_select_3 = "<leader>hg3",
-		global_select_4 = "<leader>hg4",
-		select_1 = "<leader>h1",
-		select_2 = "<leader>h2",
-		select_3 = "<leader>h3",
-		select_4 = "<leader>h4",
-		prev = "<leader>hp",
-		next = "<leader>hn",
-	},
+  keymaps = {
+    add = "<leader>ha",
+    toggle = "<leader>he",
+    global_add = "<leader>hga",
+    global_toggle = "<leader>hge",
+    global_select_1 = "<leader>hg1",
+    global_select_2 = "<leader>hg2",
+    global_select_3 = "<leader>hg3",
+    global_select_4 = "<leader>hg4",
+    select_1 = "<leader>h1",
+    select_2 = "<leader>h2",
+    select_3 = "<leader>h3",
+    select_4 = "<leader>h4",
+    prev = "<leader>hp",
+    next = "<leader>hn",
+  },
 
-	key = function()
-		return (vim.uv or vim.loop).cwd()
-	end,
+  key = function()
+    return (vim.uv or vim.loop).cwd()
+  end,
 
-	sync_on_close = true,
+  sync_on_close = true,
 
-	-- Prefix for which-key group label. nil = auto-derive from keymaps.add.
-	keymap_prefix = nil,
+  -- Prefix for which-key group label. nil = auto-derive from keymaps.add.
+  keymap_prefix = nil,
 
-	picker = {},
+  picker = {},
 
-	default = {
-		-- When true, select() is called even when the slot is empty.
-		-- Useful for custom select handlers that want to handle nil items.
-		select_with_nil = false,
+  default = {
+    -- When true, select() is called even when the slot is empty.
+    -- Useful for custom select handlers that want to handle nil items.
+    select_with_nil = false,
 
-		create_list_item = function(_, item)
-			if item then
-				return { value = item, context = {} }
-			end
-			-- When invoked from snacks.explorer, grab the focused node's path
-			if vim.bo.filetype == "snacks_picker_list" then
-				if not rawget(_G, "Snacks") then return nil end
-				local pickers = Snacks.picker.get({ source = "explorer" })
-				local explorer = pickers[#pickers]
-				if explorer then
-					local node = explorer:current()
-					if node and node.file and vim.fn.isdirectory(node.file) == 0 then
-						return {
-							value = vim.fn.fnamemodify(node.file, ":~:."),
-							context = {},
-						}
-					end
-				end
-				return nil
-			end
-			local bufname = vim.api.nvim_buf_get_name(0)
-			if bufname == "" then
-				return nil
-			end
-			return {
-				value = vim.fn.fnamemodify(bufname, ":~:."),
-				context = { row = vim.fn.line("."), col = vim.fn.col(".") },
-			}
-		end,
+    create_list_item = function(_, item)
+      if item then
+        return { value = item, context = {} }
+      end
+      -- When invoked from snacks.explorer, grab the focused node's path
+      if vim.bo.filetype == "snacks_picker_list" then
+        if not rawget(_G, "Snacks") then
+          return nil
+        end
+        local pickers = Snacks.picker.get({ source = "explorer" })
+        local explorer = pickers[#pickers]
+        if explorer then
+          local node = explorer:current()
+          if node and node.file and vim.fn.isdirectory(node.file) == 0 then
+            return {
+              value = vim.fn.fnamemodify(node.file, ":~:."),
+              context = {},
+            }
+          end
+        end
+        return nil
+      end
+      local bufname = vim.api.nvim_buf_get_name(0)
+      if bufname == "" then
+        return nil
+      end
+      return {
+        value = vim.fn.fnamemodify(bufname, ":~:."),
+        context = { row = vim.fn.line("."), col = vim.fn.col(".") },
+      }
+    end,
 
-		display = function(item)
-			return item.value
-		end,
+    display = function(item)
+      return item.value
+    end,
 
-		select = function(item, _, opts)
-			if not item then
-				return
-			end
-			opts = opts or {}
-			local cmd = opts.vsplit and "vsplit" or opts.split and "split" or opts.tabedit and "tabedit" or "edit"
-			vim.cmd(cmd .. " " .. vim.fn.fnameescape(item.value))
-			if item.context and item.context.row then
-				pcall(vim.api.nvim_win_set_cursor, 0, { item.context.row, item.context.col or 0 })
-			end
-		end,
+    select = function(item, _, opts)
+      if not item then
+        return
+      end
+      opts = opts or {}
+      local cmd = opts.vsplit and "vsplit" or opts.split and "split" or opts.tabedit and "tabedit" or "edit"
+      vim.cmd(cmd .. " " .. vim.fn.fnameescape(item.value))
+      if item.context and item.context.row then
+        pcall(vim.api.nvim_win_set_cursor, 0, { item.context.row, item.context.col or 0 })
+      end
+    end,
 
-		equals = function(a, b)
-			return a.value == b.value
-		end,
+    equals = function(a, b)
+      return a.value == b.value
+    end,
 
-		encode = vim.json.encode,
-		decode = vim.json.decode,
-	},
+    encode = vim.json.encode,
+    decode = vim.json.decode,
+  },
 }
 
 --- create_list_item variant that stores absolute paths, for use by global lists.
 function M.global_create_list_item(_, item)
-	if item then
-		return { value = vim.fn.fnamemodify(item, ":p"), context = {} }
-	end
-	if vim.bo.filetype == "snacks_picker_list" then
-		if not rawget(_G, "Snacks") then return nil end
-		local pickers = Snacks.picker.get({ source = "explorer" })
-		local explorer = pickers[#pickers]
-		if explorer then
-			local node = explorer:current()
-			if node and node.file and vim.fn.isdirectory(node.file) == 0 then
-				return { value = node.file, context = {} }
-			end
-		end
-		return nil
-	end
-	local bufname = vim.api.nvim_buf_get_name(0)
-	if bufname == "" then return nil end
-	return {
-		value = vim.fn.fnamemodify(bufname, ":p"),
-		context = { row = vim.fn.line("."), col = vim.fn.col(".") },
-	}
+  if item then
+    return { value = vim.fn.fnamemodify(item, ":p"), context = {} }
+  end
+  if vim.bo.filetype == "snacks_picker_list" then
+    if not rawget(_G, "Snacks") then
+      return nil
+    end
+    local pickers = Snacks.picker.get({ source = "explorer" })
+    local explorer = pickers[#pickers]
+    if explorer then
+      local node = explorer:current()
+      if node and node.file and vim.fn.isdirectory(node.file) == 0 then
+        return { value = node.file, context = {} }
+      end
+    end
+    return nil
+  end
+  local bufname = vim.api.nvim_buf_get_name(0)
+  if bufname == "" then
+    return nil
+  end
+  return {
+    value = vim.fn.fnamemodify(bufname, ":p"),
+    context = { row = vim.fn.line("."), col = vim.fn.col(".") },
+  }
 end
 
 function M.merge(user)
-	user = user or {}
-	local merged = vim.tbl_deep_extend("force", M.defaults, user)
-	if user.keymaps == false then
-		merged.keymaps = false
-	end
-	return merged
+  user = user or {}
+  local merged = vim.tbl_deep_extend("force", M.defaults, user)
+  if user.keymaps == false then
+    merged.keymaps = false
+  end
+  return merged
 end
 
 return M
