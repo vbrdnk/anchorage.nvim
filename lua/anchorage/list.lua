@@ -7,10 +7,12 @@ M.__index = M
 --- Create or load a list.
 --- @param name string
 --- @param config table  merged anchorage config
-function M.new(name, config)
+--- @param opts? table  optional: { key_override = string }
+function M.new(name, config, opts)
 	local self = setmetatable({}, M)
 	self.name = name
 	self.config = config
+	self._key_override = opts and opts.key_override or nil
 	self._items = {}
 	self:_load()
 	return self
@@ -19,7 +21,7 @@ end
 -- ── persistence ────────────────────────────────────────────────────────────
 
 function M:_path()
-	local key = self.config.key():gsub("[/\\%s]", "_"):gsub("[^%w_%-]", "")
+	local key = (self._key_override or self.config.key()):gsub("[/\\%s]", "_"):gsub("[^%w_%-]", "")
 	local dir = self.config.data_path
 	vim.fn.mkdir(dir, "p")
 	return dir .. "/" .. key .. "__" .. self.name .. ".json"

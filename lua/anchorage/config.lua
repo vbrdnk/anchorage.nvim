@@ -7,6 +7,12 @@ M.defaults = {
 	keymaps = {
 		add = "<leader>ha",
 		toggle = "<leader>he",
+		global_add = "<leader>hga",
+		global_toggle = "<leader>hge",
+		global_select_1 = "<leader>hg1",
+		global_select_2 = "<leader>hg2",
+		global_select_3 = "<leader>hg3",
+		global_select_4 = "<leader>hg4",
 		select_1 = "<leader>h1",
 		select_2 = "<leader>h2",
 		select_3 = "<leader>h3",
@@ -85,6 +91,31 @@ M.defaults = {
 		decode = vim.json.decode,
 	},
 }
+
+--- create_list_item variant that stores absolute paths, for use by global lists.
+function M.global_create_list_item(_, item)
+	if item then
+		return { value = vim.fn.fnamemodify(item, ":p"), context = {} }
+	end
+	if vim.bo.filetype == "snacks_picker_list" then
+		if not rawget(_G, "Snacks") then return nil end
+		local pickers = Snacks.picker.get({ source = "explorer" })
+		local explorer = pickers[#pickers]
+		if explorer then
+			local node = explorer:current()
+			if node and node.file and vim.fn.isdirectory(node.file) == 0 then
+				return { value = node.file, context = {} }
+			end
+		end
+		return nil
+	end
+	local bufname = vim.api.nvim_buf_get_name(0)
+	if bufname == "" then return nil end
+	return {
+		value = vim.fn.fnamemodify(bufname, ":p"),
+		context = { row = vim.fn.line("."), col = vim.fn.col(".") },
+	}
+end
 
 function M.merge(user)
 	user = user or {}
