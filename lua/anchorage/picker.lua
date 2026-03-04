@@ -6,7 +6,11 @@ local M = {}
 
 ---@param list AnchorageList
 function M.open(list)
-  local snacks = require("snacks")
+  local ok, snacks = pcall(require, "snacks")
+  if not ok then
+    vim.notify("[anchorage] snacks.nvim is required for the picker", vim.log.levels.ERROR, { title = "Anchorage" })
+    return
+  end
 
   -- ── helpers ───────────────────────────────────────────────────────────────
 

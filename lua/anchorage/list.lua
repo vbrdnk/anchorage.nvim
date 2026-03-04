@@ -118,33 +118,41 @@ function M:select(idx, opts)
 end
 
 function M:next()
+  local cfg = self.config.default
   local cur = vim.api.nvim_buf_get_name(0)
-  local rel = vim.fn.fnamemodify(cur, ":~:.")
+  local cur_item = cfg.create_list_item(cfg, cur)
+  if not cur_item then
+    return
+  end
   for i, item in ipairs(self._items) do
-    if item.value == rel then
+    if cfg.equals(item, cur_item) then
       local nxt = self._items[i % #self._items + 1]
-      self.config.default.select(nxt, self, {})
+      cfg.select(nxt, self, {})
       return
     end
   end
   -- not in list → jump to first
   if self._items[1] then
-    self.config.default.select(self._items[1], self, {})
+    cfg.select(self._items[1], self, {})
   end
 end
 
 function M:prev()
+  local cfg = self.config.default
   local cur = vim.api.nvim_buf_get_name(0)
-  local rel = vim.fn.fnamemodify(cur, ":~:.")
+  local cur_item = cfg.create_list_item(cfg, cur)
+  if not cur_item then
+    return
+  end
   for i, item in ipairs(self._items) do
-    if item.value == rel then
+    if cfg.equals(item, cur_item) then
       local prv = self._items[((i - 2) % #self._items) + 1]
-      self.config.default.select(prv, self, {})
+      cfg.select(prv, self, {})
       return
     end
   end
   if self._items[#self._items] then
-    self.config.default.select(self._items[#self._items], self, {})
+    cfg.select(self._items[#self._items], self, {})
   end
 end
 
